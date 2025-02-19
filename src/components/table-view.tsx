@@ -1,4 +1,5 @@
 import { Task } from "@/lib/types";
+import { Table, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 
 interface TableViewProps {
     tasks: Task[];
@@ -6,23 +7,23 @@ interface TableViewProps {
 
 export default function TableView({ tasks }: TableViewProps) {
     return (
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Status</th>
-                    <th>Priority</th>
-                </tr>
-            </thead>
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Priority</TableHead>
+                </TableRow>
+            </TableHeader>
             <tbody>
                 {tasks.map((task) => (
-                    <tr key={task.id}>
-                        <td>{task.title}</td>
-                        <td>{task.status}</td>
-                        <td>{task.priority}</td>
-                    </tr>
+                    <TableRow key={task.id}>
+                        <TableCell>{task.title}</TableCell>
+                        <TableCell>{task.status}</TableCell>
+                        <TableCell>{task.priority}</TableCell>
+                    </TableRow>
                 ))}
             </tbody>
-        </table>
+        </Table>
     );
 }
