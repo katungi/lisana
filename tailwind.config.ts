@@ -10,6 +10,14 @@ export default {
   theme: {
   	extend: {
   		colors: {
+			"priority-low": "#15803d", 
+			"priority-medium": "#fcd34d",
+			"priority-high": "#e879f9",
+			"priority-none": "#f87171",
+			"status-ontrack": "#15803d", 
+			"status-atrisk": "#fcd34d",
+			"status-offtrack": "#f87171",
+
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
