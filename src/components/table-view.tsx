@@ -9,12 +9,22 @@ import {
 } from "./ui/table";
 import { Button } from "./ui/button";
 import { Edit, Filter, Settings, SortAsc, Trash2, Users } from "lucide-react";
+import { Checkbox } from "./ui/checkbox";
+import { Input } from "./ui/input";
+import { useState } from "react";
 
 interface TableViewProps {
     tasks: Task[];
 }
 
 export default function TableView({ tasks }: TableViewProps) {
+    const [selectedTasks, setSelectedTasks] = useState<number[]>([]);
+    const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleTitleEdit = (id: number, title: string) => {
+        console.log(`Editing task ${id} with title ${title}`);
+    };
     return (
         <div className="rounded-lg border bg-background-card">
             <div className="p-4 flex justify-between items-center border-b">
@@ -67,8 +77,37 @@ export default function TableView({ tasks }: TableViewProps) {
                         </TableHeader>
                         <tbody>
                             {tasks.map((task) => (
-                                <TableRow key={task.id}>
-                                    <TableCell>{task.title}</TableCell>
+                                <TableRow key={task.id} className="group">
+                                    <TableCell>
+                                        <Checkbox
+                                            checked={selectedTasks.includes(
+                                                task.id,
+                                            )}
+                                            onCheckedChange={(checked) => {
+                                                setSelectedTasks(
+                                                    checked
+                                                        ? [
+                                                            ...selectedTasks,
+                                                            task.id,
+                                                        ]
+                                                        : selectedTasks.filter((
+                                                            id,
+                                                        ) => id !== task.id),
+                                                );
+                                            }}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <Input
+                                            value={task.title}
+                                            onChange={(e) =>
+                                                handleTitleEdit(
+                                                    task.id,
+                                                    e.target.value,
+                                                )}
+                                            className="bg-transparent border-none hover:bg-background focus:bg-background"
+                                        />
+                                    </TableCell>
                                     <TableCell>
                                         {task.status.replace("_", " ")}
                                     </TableCell>
@@ -84,7 +123,8 @@ export default function TableView({ tasks }: TableViewProps) {
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => {
-                                                alert("Edit task clicked");
+                                                setEditingTask(task);
+                                                setIsModalOpen(true);
                                             }}
                                         >
                                             <Edit className="h-4 w-4" />

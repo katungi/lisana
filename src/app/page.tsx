@@ -15,13 +15,14 @@ export default function Home() {
           </h1>
         </div>
         <div className="flex justify-between items-center">
-          <div className="flex gap-2">
+          <div className="flex gap-2 mt-3">
             <Button
               variant={"outline"}
               className="gap-2"
               onClick={() => alert("List view clicked")}
             >
               <Table size={24} />
+              Table
             </Button>
             <Button
               variant={"outline"}
@@ -29,6 +30,7 @@ export default function Home() {
               onClick={() => alert("Grid view clicked")}
             >
               <SquareKanban size={24} />
+              Kanban
             </Button>
           </div>
         </div>
