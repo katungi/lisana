@@ -19,7 +19,7 @@ export default function TableView({ tasks }: TableViewProps) {
         <div className="rounded-lg border bg-background-card">
             <div className="p-4 flex justify-between items-center border-b">
                 <Button
-                    variant="outline"
+                    variant="default"
                     className="gap-2"
                 >
                     + Add task
