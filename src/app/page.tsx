@@ -1,16 +1,14 @@
-"use client";
-import TableView from "@/components/table-view";
-import { SquareKanban, Table } from "lucide-react";
-import { useTaskStore } from "@/store/task-store";
-import { Toaster } from "sonner";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import { KanbanView } from "@/components/kanban-view";
+'use client';
+import { KanbanView } from '@/components/kanban-view';
+import TableView from '@/components/table-view';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
+import { SquareKanban, Table } from 'lucide-react';
+import { useState } from 'react';
+import { Toaster } from 'sonner';
 
 export default function Home() {
-  const tasks = useTaskStore((state) => state.tasks);
-  const [activeView, setActiveView] = useState("table");
+  const [activeView, setActiveView] = useState('table');
 
   const handleViewChange = (view: string) => {
     setActiveView(view);
@@ -20,22 +18,22 @@ export default function Home() {
     <div className="min-h-screen p-8">
       <Toaster position="top-right" richColors />
       <header className="mb-4">
-        <div className="flex justify-between items-center">
-          <h1 className="text-primary-100 text-8xl font-black tracking-tight leading-none">
+        <div className="flex items-center justify-between">
+          <h1 className="font-black text-8xl text-primary-100 leading-none tracking-tight">
             LISANA
           </h1>
         </div>
 
-        <div className="bg-gray-100 p-1 rounded-lg inline-flex items-center mt-8">
+        <div className="mt-8 inline-flex items-center rounded-lg bg-gray-100 p-1">
           <motion.button
-            onClick={() => handleViewChange("table")}
+            onClick={() => handleViewChange('table')}
             className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-md transition-all",
-              activeView === "table"
-                ? "bg-purple-100 text-primary shadow-sm"
-                : "text-muted-foreground hover:text-primary",
+              'flex items-center gap-2 rounded-md px-4 py-2 transition-all',
+              activeView === 'table'
+                ? 'bg-purple-100 text-primary shadow-sm'
+                : 'text-muted-foreground hover:text-primary'
             )}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -44,14 +42,14 @@ export default function Home() {
           </motion.button>
 
           <motion.button
-            onClick={() => handleViewChange("kanban")}
+            onClick={() => handleViewChange('kanban')}
             className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-md transition-all",
-              activeView === "kanban"
-                ? "bg-purple-100 text-primary shadow-sm"
-                : "text-muted-foreground hover:text-primary",
+              'flex items-center gap-2 rounded-md px-4 py-2 transition-all',
+              activeView === 'kanban'
+                ? 'bg-purple-100 text-primary shadow-sm'
+                : 'text-muted-foreground hover:text-primary'
             )}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -60,9 +58,7 @@ export default function Home() {
           </motion.button>
         </div>
       </header>
-      <main>
-        {activeView === "table" ? <TableView /> : <KanbanView />}
-      </main>
+      <main>{activeView === 'table' ? <TableView /> : <KanbanView />}</main>
     </div>
   );
 }
