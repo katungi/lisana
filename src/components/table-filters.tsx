@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Search, Users } from "lucide-react";
+import { CircleX, Search, Users } from "lucide-react";
 import {
     Popover,
     PopoverContent,
@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { ActiveFilters, Priority, Status, Task, User } from "@/lib/types";
-import { Checkbox } from "@/components/ui/checkbox";
 
 interface TableFiltersProps {
     tasks: Task[];
@@ -25,20 +24,6 @@ interface TableFiltersProps {
     onPriorityFilterChange: (priorities: Priority[]) => void;
     showClearFilters?: boolean;
 }
-
-const PRIORITY_COLORS = {
-    none: "bg-gray-100 text-gray-600",
-    low: "bg-blue-100 text-blue-600",
-    medium: "bg-yellow-100 text-yellow-600",
-    high: "bg-orange-100 text-orange-600",
-    urgent: "bg-red-100 text-red-600",
-};
-
-const STATUS_COLORS = {
-    not_started: "bg-gray-100 text-gray-600",
-    in_progress: "bg-blue-100 text-blue-600",
-    completed: "bg-green-100 text-green-600",
-};
 
 const TableFilters = ({
     tasks,
@@ -108,7 +93,7 @@ const TableFilters = ({
             <AvatarImage src={user.avatar} />
             <AvatarFallback
                 className={cn(
-                    `${user.style.bg} ${user.style.text}`,
+                    `bg-purple-300 ${user.style.text}`,
                     "text-sm font-medium",
                 )}
             >
@@ -134,6 +119,7 @@ const TableFilters = ({
                             onClick={clearFilters}
                             className="text-xs text-muted-foreground hover:text-foreground"
                         >
+                            <CircleX size={16} />
                             Clear filters
                         </Button>
                     </motion.div>
@@ -147,7 +133,7 @@ const TableFilters = ({
                     placeholder="Search tasks..."
                     value={searchValue}
                     onChange={(e) => onSearchChange(e.target.value)}
-                    className="pl-8 h-8 w-40 lg:w-64"
+                    className="pl-8 h-10 w-[200px] lg:w-64"
                 />
             </div>
 

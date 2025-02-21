@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
     Select,
     SelectContent,
@@ -81,8 +80,6 @@ export function TaskModal({
     onSave,
     task,
     customFields = [],
-    onAddCustomField,
-    onRemoveCustomField,
 }: TaskModalProps) {
     const [open, setOpen] = useState(false);
     const addTask = useTaskStore((state) => state.addTask);
@@ -279,8 +276,7 @@ export function TaskModal({
                                                             />
                                                             <div
                                                                 className={cn(
-                                                                    "h-6 w-6 mr-2 rounded-full flex items-center justify-center",
-                                                                    style.bg,
+                                                                    "h-6 w-6 mr-2 rounded-full flex items-center justify-center bg-purple-100",
                                                                 )}
                                                             >
                                                                 <span
@@ -307,7 +303,7 @@ export function TaskModal({
                                             className="flex items-center gap-2 bg-background rounded-full px-3 py-1"
                                         >
                                             <Avatar className={`h-6 w-6`}>
-                                                <AvatarFallback>
+                                                <AvatarFallback className="bg-purple-100 text-sm">
                                                     {assignee.name
                                                         .split(" ")
                                                         .map((n) => n[0])

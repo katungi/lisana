@@ -101,10 +101,6 @@ export function KanbanView() {
             }
         });
 
-    useEffect(() => {
-        console.log("Selected:", selectedTask);
-    }, [selectedTask]);
-
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -114,8 +110,8 @@ export function KanbanView() {
                         <Input
                             placeholder="Search tasks..."
                             value={searchTerm}
+                            size={48}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-8"
                         />
                     </div>
                     <Select
@@ -162,9 +158,6 @@ export function KanbanView() {
                                         }}
                                     >
                                         <Plus className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon">
-                                        <MoreHorizontal className="h-4 w-4" />
                                     </Button>
                                 </div>
                             </div>
@@ -247,14 +240,7 @@ export function KanbanView() {
                 }}
                 onSave={(newTask) => {
                     if (selectedTask) {
-                        handleUpdateTask({...selectedTask, ...newTask});
-                    } else if (selectedColumn) {
-                        handleAddTask({
-                            ...newTask,
-                            status: selectedColumn.id,
-                            createdAt: new Date().toISOString(),
-                            updatedAt: new Date().toISOString(), 
-                        });
+                        handleUpdateTask({ ...selectedTask, ...newTask });
                     }
                     setIsModalOpen(false);
                     setSelectedColumn(null);

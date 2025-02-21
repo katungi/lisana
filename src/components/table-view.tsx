@@ -8,7 +8,14 @@ import {
     TableRow,
 } from "./ui/table";
 import { Button } from "./ui/button";
-import { ChevronDown, ChevronUp, Edit, Filter, Trash2 } from "lucide-react";
+import {
+    ChevronDown,
+    ChevronUp,
+    Edit,
+    Filter,
+    Plus,
+    Trash2,
+} from "lucide-react";
 import { Checkbox } from "./ui/checkbox";
 import { Input } from "./ui/input";
 import { useEffect, useState } from "react";
@@ -23,6 +30,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { StatusBadge } from "./status-badge";
 
 type SortDirection = "asc" | "desc";
 type SortField = "title" | "status" | "priority" | "created";
@@ -203,10 +211,12 @@ export default function TableView() {
             <div className="p-4 flex justify-between items-center border-b">
                 <Button
                     variant="default"
-                    className="gap-2"
+                    className="px-4 py-2 gap-2 items-center flex"
+                    size="lg"
                     onClick={() => setIsModalOpen(true)}
                 >
-                    + Add task
+                    <Plus size={18} />
+                    Add task
                 </Button>
                 <TableFilters
                     tasks={tasks}
@@ -232,7 +242,10 @@ export default function TableView() {
                         <p className="text-muted-foreground mb-4">
                             No tasks yet. Create your first task!
                         </p>
-                        <Button onClick={() => setIsModalOpen(true)}>
+                        <Button
+                            onClick={() => setIsModalOpen(true)}
+                            className="px-4 py-2 "
+                        >
                             Create Task
                         </Button>
                     </div>
@@ -259,13 +272,13 @@ export default function TableView() {
                                         />
                                     </TableCell>
                                     <TableHead
-                                        className="cursor-pointer"
+                                        className="cursor-pointer font-bold text-lg"
                                         onClick={() => handleSort("title")}
                                     >
                                         Task Name {getSortIcon("title")}
                                     </TableHead>
-                                    <TableHead>
-                                        <div className="flex items-center">
+                                    <TableHead >
+                                        <div className="flex items-center font-bold text-lg">
                                             <span
                                                 className="cursor-pointer mr-2"
                                                 onClick={() =>
@@ -331,7 +344,7 @@ export default function TableView() {
                                         </div>
                                     </TableHead>
                                     <TableHead>
-                                        <div className="flex items-center">
+                                        <div className="flex items-center font-bold text-lg">
                                             <span
                                                 className="cursor-pointer mr-2"
                                                 onClick={() =>
@@ -393,7 +406,7 @@ export default function TableView() {
                                             </DropdownMenu>
                                         </div>
                                     </TableHead>
-                                    <TableHead className="w-24">
+                                    <TableHead className="w-24 font-bold text-lg">
                                         Actions
                                     </TableHead>
                                 </TableRow>
@@ -454,17 +467,16 @@ export default function TableView() {
                                                     />
                                                 </TableCell>
                                                 <TableCell>
-                                                    {task.status.replace(
-                                                        "_",
-                                                        " ",
-                                                    )}
+                                                    <StatusBadge
+                                                        type="status"
+                                                        value={task.status}
+                                                    />
                                                 </TableCell>
                                                 <TableCell>
-                                                    <span
-                                                        className={`priority-${task.priority}`}
-                                                    >
-                                                        {task.priority}
-                                                    </span>
+                                                    <StatusBadge
+                                                        type="priority"
+                                                        value={task.priority}
+                                                    />
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="flex items-center gap-2">
@@ -490,7 +502,7 @@ export default function TableView() {
                                                                     task.id,
                                                                 )}
                                                         >
-                                                            <Trash2 className="h-4 w-4" />
+                                                            <Trash2 className="h-4 w-4 text-red-500" />
                                                         </Button>
                                                     </div>
                                                 </TableCell>
