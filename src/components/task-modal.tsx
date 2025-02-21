@@ -321,7 +321,10 @@ export function TaskModal({
                                 <Select
                                     value={form.watch("status")}
                                     onValueChange={(value) =>
-                                        form.setValue("status", value as Status)}
+                                        form.setValue(
+                                            "status",
+                                            value as Status,
+                                        )}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select status" />
@@ -356,7 +359,10 @@ export function TaskModal({
                                 <Select
                                     value={form.watch("priority")}
                                     onValueChange={(value) =>
-                                        form.setValue("priority", value as Priority)}
+                                        form.setValue(
+                                            "priority",
+                                            value as Priority,
+                                        )}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select priority" />
@@ -440,16 +446,6 @@ export function TaskModal({
                                 )}
                             </div>
                         ))}
-
-                        {
-                            /* {onAddCustomField && onRemoveCustomField && (
-              <CustomFieldsEditor
-                customFields={customFields}
-                onAddField={onAddCustomField}
-                onRemoveField={onRemoveCustomField}
-              />
-            )} */
-                        }
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={onClose}>
