@@ -95,7 +95,6 @@ export function KanbanView() {
 
     if (!taskToMove) return;
 
-    // Update the task's priority based on the destination column
     const newPriority = destination.droppableId as Priority;
 
     // Ensure the priority is valid
@@ -192,47 +191,7 @@ export function KanbanView() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          {isSelectionMode && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-purple-600 font-medium">
-                {selectedTaskIds.length} tasks selected
-              </span>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={handleBulkDelete}
-                disabled={selectedTaskIds.length === 0}
-                className="flex items-center gap-1"
-              >
-                <Trash2 size={16} />
-                Delete Selected
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setIsSelectionMode(false);
-                  setSelectedTaskIds([]);
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
-          )}
-          {!isSelectionMode && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleSelectionMode}
-              className="flex items-center gap-1"
-            >
-              Select Tasks
-            </Button>
-          )}
-        </div>
-
+      <div className="flex items-center justify-end">
         <div className="flex justify-end gap-4">
           {/* Clear Filters Button */}
           <AnimatePresence>

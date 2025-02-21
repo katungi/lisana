@@ -93,18 +93,6 @@ export function KanbanCard({
       >
         <CardHeader className="p-4 flex flex-row items-start justify-between">
           <div className="flex items-start gap-2">
-            {/* {(isHovering || isSelected) && (
-              <div
-                className="mt-1 flex-shrink-0"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Checkbox
-                  checked={isSelected}
-                  onCheckedChange={handleSelectionChange}
-                />
-              </div>
-            )} */}
-
             {isEditing ? (
               <motion.input
                 layout="position"
