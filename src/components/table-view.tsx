@@ -1,7 +1,8 @@
+"use client";
 import { ActiveFilters, Priority, Status, Task } from "@/lib/types";
 import {
     Table,
-    TableCaption,
+    TableBody,
     TableCell,
     TableHead,
     TableHeader,
@@ -16,14 +17,14 @@ import {
     Plus,
     Trash2,
 } from "lucide-react";
+import { Avatar } from "./ui/avatar";
 import { Checkbox } from "./ui/checkbox";
-import { Input } from "./ui/input";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TaskModal } from "./task-modal";
 import { toast } from "sonner";
 import { useTaskStore } from "@/store/task-store";
 import TableFilters from "./table-filters";
-import { users } from "@/lib/users";
+import { getAvatarStyle, users } from "@/lib/users";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -31,6 +32,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { StatusBadge } from "./status-badge";
+import { motion } from "framer-motion";
+import { AvatarFallback } from "@radix-ui/react-avatar";
+import { cn } from "@/lib/utils";
 
 type SortDirection = "asc" | "desc";
 type SortField = "title" | "status" | "priority" | "created";
@@ -40,8 +44,17 @@ export default function TableView() {
     const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const deleteTask = useTaskStore((state) => state.deleteTask);
-    const tasks = useTaskStore((state) => state.tasks);
+    const [editingTitle, setEditingTitle] = useState(false);
+    const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
 
+    const [selectedTask, setSelectedTask] = useState<Task | undefined>(
+        undefined,
+    );
+    const [title, setTitle] = useState(selectedTask?.title);
+    const tasks = useTaskStore((state) => state.tasks);
+    const updateTask = useTaskStore((state) => state.updateTask);
+
+    const inputRef = useRef<HTMLInputElement>(null);
     // Filtering and sorting state
     const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
         search: "",
@@ -56,6 +69,13 @@ export default function TableView() {
     const [titleFilter, setTitleFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState<Status[]>([]);
     const [priorityFilter, setPriorityFilter] = useState<Priority[]>([]);
+
+    // Pagination state
+    const tasksPerPage = 10;
+    const [currentPage, setCurrentPage] = useState(1);
+    const indexOfLastTask = currentPage * tasksPerPage;
+    const indexOfFirstTask = indexOfLastTask - tasksPerPage;
+    const currentTasks = filteredTasks.slice(indexOfFirstTask, indexOfLastTask);
 
     // Update filtered tasks when filters or tasks change
     useEffect(() => {
@@ -78,9 +98,23 @@ export default function TableView() {
         tasks,
     ]);
 
-    const handleTitleEdit = (id: number, title: string) => {
-        console.log(`Editing task ${id} with title ${title}`);
+    const handleSave = async () => {
+        if (title?.trim() && title !== selectedTask?.title) {
+            updateTask({ ...selectedTask, title } as Task);
+            toast.success("Task title updated!");
+        }
+        setEditingTitleId(null);
     };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") handleSave();
+        if (e.key === "Escape") {
+            setTitle(selectedTask?.title); // Reset title if editing is canceled
+            setEditingTitleId(null);
+        }
+    };
+
+    const handleBlur = () => handleSave();
 
     const deleteTasks = () => {
         selectedTasks.forEach((id) => deleteTask(id));
@@ -258,12 +292,12 @@ export default function TableView() {
                                     <TableCell>
                                         <Checkbox
                                             checked={selectedTasks.length ===
-                                                    filteredTasks.length &&
-                                                filteredTasks.length > 0}
+                                                    currentTasks.length &&
+                                                currentTasks.length > 0}
                                             onCheckedChange={(checked) => {
                                                 setSelectedTasks(
                                                     checked
-                                                        ? filteredTasks.map((
+                                                        ? currentTasks.map((
                                                             task,
                                                         ) => task.id)
                                                         : [],
@@ -277,7 +311,7 @@ export default function TableView() {
                                     >
                                         Task Name {getSortIcon("title")}
                                     </TableHead>
-                                    <TableHead >
+                                    <TableHead>
                                         <div className="flex items-center font-bold text-lg">
                                             <span
                                                 className="cursor-pointer mr-2"
@@ -406,13 +440,16 @@ export default function TableView() {
                                             </DropdownMenu>
                                         </div>
                                     </TableHead>
+                                    <TableHead className="w-64 font-bold text-lg">
+                                        Assignee
+                                    </TableHead>
                                     <TableHead className="w-24 font-bold text-lg">
                                         Actions
                                     </TableHead>
                                 </TableRow>
                             </TableHeader>
-                            <tbody>
-                                {filteredTasks.length === 0
+                            <TableBody>
+                                {currentTasks.length === 0
                                     ? (
                                         <TableRow>
                                             <TableCell
@@ -424,7 +461,7 @@ export default function TableView() {
                                         </TableRow>
                                     )
                                     : (
-                                        filteredTasks.map((task) => (
+                                        currentTasks.map((task) => (
                                             <TableRow
                                                 key={task.id}
                                                 className="group"
@@ -456,15 +493,46 @@ export default function TableView() {
                                                     />
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Input
-                                                        value={task.title}
-                                                        onChange={(e) =>
-                                                            handleTitleEdit(
-                                                                task.id,
-                                                                e.target.value,
-                                                            )}
-                                                        className="bg-transparent border-none hover:bg-background focus:bg-background"
-                                                    />
+                                                    {editingTitleId ===
+                                                            task.id.toString()
+                                                        ? (
+                                                            <motion.input
+                                                                layout="position"
+                                                                ref={inputRef}
+                                                                value={title}
+                                                                onChange={(e) =>
+                                                                    setTitle(
+                                                                        e.target
+                                                                            .value,
+                                                                    )}
+                                                                onKeyDown={handleKeyDown}
+                                                                onBlur={handleBlur}
+                                                                className="w-full text-sm font-medium border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+                                                            />
+                                                        )
+                                                        : (
+                                                            <motion.h3
+                                                                layout="position"
+                                                                className="text-lg font-medium hover:underline cursor-text"
+                                                                onClick={(
+                                                                    e,
+                                                                ) => {
+                                                                    e.stopPropagation();
+                                                                    setSelectedTask(
+                                                                        task,
+                                                                    );
+                                                                    setTitle(
+                                                                        task.title,
+                                                                    );
+                                                                    setEditingTitleId(
+                                                                        task.id
+                                                                            .toString(),
+                                                                    );
+                                                                }}
+                                                            >
+                                                                {task.title}
+                                                            </motion.h3>
+                                                        )}
                                                 </TableCell>
                                                 <TableCell>
                                                     <StatusBadge
@@ -477,6 +545,80 @@ export default function TableView() {
                                                         type="priority"
                                                         value={task.priority}
                                                     />
+                                                </TableCell>
+                                                <TableCell className="w-48 md:w-64">
+                                                    <div className="flex -space-x-3 hover:space-x-1 transition-all duration-300 justify-start">
+                                                        {task.assignees.length >
+                                                                0
+                                                            ? (
+                                                                task.assignees
+                                                                    .map(
+                                                                        (
+                                                                            assignee,
+                                                                            index,
+                                                                        ) => {
+                                                                            const style =
+                                                                                getAvatarStyle(
+                                                                                    assignee
+                                                                                        .id,
+                                                                                );
+                                                                            const initials =
+                                                                                assignee
+                                                                                    .name
+                                                                                    .split(
+                                                                                        " ",
+                                                                                    )
+                                                                                    .map(
+                                                                                        (
+                                                                                            n,
+                                                                                        ) => n[
+                                                                                            0
+                                                                                        ],
+                                                                                    )
+                                                                                    .join(
+                                                                                        "",
+                                                                                    );
+
+                                                                            return (
+                                                                                <Avatar
+                                                                                    key={assignee
+                                                                                        .id}
+                                                                                    className={cn(
+                                                                                        "h-8 w-8 border-2 border-background transition-all duration-200 items-center flex bg-purple-100",
+                                                                                        index >=
+                                                                                                4 &&
+                                                                                            "hidden md:flex",
+                                                                                    )}
+                                                                                    title={assignee
+                                                                                        .name}
+                                                                                >
+                                                                                    <AvatarFallback
+                                                                                        className={`text-md ml-1.5`}
+                                                                                    >
+                                                                                        {initials}
+                                                                                    </AvatarFallback>
+                                                                                </Avatar>
+                                                                            );
+                                                                        },
+                                                                    )
+                                                            )
+                                                            : (
+                                                                <span className="text-gray-400 text-sm">
+                                                                    Unassigned
+                                                                </span>
+                                                            )}
+                                                        {task.assignees.length >
+                                                                4 && (
+                                                            <Avatar className="h-8 w-8 border-2 border-background">
+                                                                <AvatarFallback className="text-xs bg-gray-200">
+                                                                    +{task
+                                                                        .assignees
+                                                                        .length -
+                                                                        4}
+                                                                </AvatarFallback>
+                                                            </Avatar>
+                                                        )}
+                                                    </div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="flex items-center gap-2">
@@ -509,10 +651,35 @@ export default function TableView() {
                                             </TableRow>
                                         ))
                                     )}
-                            </tbody>
+                            </TableBody>
                         </Table>
                     </div>
                 )}
+            <div className="flex justify-between items-center p-4">
+                <div>
+                    Showing {indexOfFirstTask + 1} to{" "}
+                    {Math.min(indexOfLastTask, tasks.length)} of {tasks.length}
+                    {" "}
+                    tasks
+                </div>
+                <div className="flex gap-2">
+                    <Button
+                        variant="outline"
+                        onClick={() =>
+                            setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        Previous
+                    </Button>
+                    <Button
+                        variant="outline"
+                        onClick={() => setCurrentPage((prev) => prev + 1)}
+                        disabled={indexOfLastTask >= tasks.length}
+                    >
+                        Next
+                    </Button>
+                </div>
+            </div>
             <TaskModal
                 isOpen={isModalOpen}
                 task={editingTask}

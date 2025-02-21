@@ -65,7 +65,7 @@ export function KanbanCard({ task, onClick, className }: KanbanCardProps) {
           ) : (
             <motion.h3
               layout="position"
-              className="text-sm font-medium hover:underline cursor-text"
+              className="text-lg font-medium hover:underline cursor-text"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsEditing(true);
