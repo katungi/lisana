@@ -1,14 +1,12 @@
 "use client";
 import TableView from "@/components/table-view";
-import { mockTasks } from "../../data/mock-tasks";
-import { Button } from "@/components/ui/button";
 import { SquareKanban, Table } from "lucide-react";
-import { useTheme } from "next-themes";
 import { useTaskStore } from "@/store/task-store";
 import { Toaster } from "sonner";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { KanbanView } from "@/components/kanban-view";
 
 export default function Home() {
   const tasks = useTaskStore((state) => state.tasks);
@@ -63,7 +61,7 @@ export default function Home() {
         </div>
       </header>
       <main>
-        <TableView tasks={tasks} />
+        {activeView === "table" ? <TableView /> : <KanbanView />}
       </main>
     </div>
   );

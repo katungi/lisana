@@ -24,18 +24,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface TableViewProps {
-    tasks: Task[];
-}
-
 type SortDirection = "asc" | "desc";
 type SortField = "title" | "status" | "priority" | "created";
 
-export default function TableView({ tasks }: TableViewProps) {
+export default function TableView() {
     const [selectedTasks, setSelectedTasks] = useState<number[]>([]);
     const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const deleteTask = useTaskStore((state) => state.deleteTask);
+    const tasks = useTaskStore((state) => state.tasks);
 
     // Filtering and sorting state
     const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
