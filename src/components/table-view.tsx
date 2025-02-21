@@ -199,7 +199,7 @@ export default function TableView({ tasks }: TableViewProps) {
 
     const showClearFilters = (): boolean => {
         return priorityFilter.length > 0 || statusFilter.length > 0;
-    }
+    };
 
     return (
         <div className="rounded-lg border bg-background-card">
@@ -329,7 +329,6 @@ export default function TableView({ tasks }: TableViewProps) {
                                                             </DropdownMenuItem>
                                                         ),
                                                     )}
-                                                    
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </div>
