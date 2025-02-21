@@ -144,7 +144,7 @@ export function KanbanCard({
                   >
                     <AvatarImage src={assignee.avatar} />
                     <AvatarFallback
-                      className={`bg-purple-100 text-xs ${style.text}`}
+                      className={`bg-purple-100 text-xs`}
                     >
                       {initials}
                     </AvatarFallback>
