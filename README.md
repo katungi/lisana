@@ -1,43 +1,67 @@
 # Lisana
 
-## Description
+## Overview
 
-Lisana is a simple task manager that allows you to create, edit, and delete
-tasks.
+**Lisana** is a simple yet powerful task manager designed to streamline task
+management through an intuitive interface. Users can effortlessly create, edit,
+and delete tasks while switching between a traditional table view and a dynamic
+Kanban board.
 
-Submission by: Daniel Denis
+**Submission by:** Daniel Denis
 
-## Accessing the app
+## Live Demo & Code
 
-The app is hosted on Vercel and can be accessed
-[here](https://lisana.vercel.app/). The code is hosted on GitHub and can be
-accessed [here](https://github.com/katungi/lisana).
+- **Live App:** [Lisana on Vercel](https://lisana-chi.vercel.app/)
+- **Source Code:** [GitHub Repository](https://github.com/katungi/lisana)
 
-## Tools used
+## Tech Stack
 
-- React and Next.js
-- TypeScript
-- ShadCn (for the headless components)
-- TailwindCSS
-- Zustand (for state management)
-- React-Beautiful-DnD (for drag and drop)
-- Zod - for validation
-- React-hook-form - for form handling
+Lisana is built with a modern tech stack to ensure responsiveness,
+maintainability, and a seamless user experience:
 
-## Features
+- **React & Next.js:** Core application framework
+- **TypeScript:** Type safety and improved developer experience
+- **ShadCn:** Headless UI components
+- **Tailwind CSS:** Utility-first styling
+- **Zustand:** Lightweight state management
+- **React Beautiful DnD:** Drag-and-drop functionality
+- **Zod:** Data validation
+- **React Hook Form:** Efficient form handling
 
-- Basic Crud operations for tasks (Create, Read, Update, Delete)
-- Users can switch between Table view and Kanban board. When in Kanban board
-  view, users can drag and drop tasks between columns of priorities ('urgent', 'high', 'medium', 'low', 'none')
-- Users can filter tasks by priority, and search for tasks by title on both modes
-- Users can perform bulk operations like delete in Table View mode
-- Users can edit tasks in a modal, and can also edit titles in line in both kanban and table mode. 
-- Users can assign users to tasks when creating/editing them, and in both can filter tasks by user/assignee
+## Key Features
 
-## Assumptions
+- **CRUD Operations:** Create, read, update, and delete tasks effortlessly.
+- **Dual View Modes:**
+  - **Table View:** Clean, structured overview with bulk operation capabilities.
+  - **Kanban Board:** Visual task management with drag-and-drop support across
+    priority columns.
+- **Task Prioritization:** Categorize tasks by priority levels: `urgent`,
+  `high`, `medium`, `low`, and `none`.
+- **Filtering & Search:**
+  - Filter tasks by priority and assignee.
+  - Search tasks by title in both table and Kanban views.
+- **Task Editing:**
+  - Inline editing for task titles.
+  - Modal-based detailed editing.
+- **User Assignment:** Assign tasks to team members for better collaboration.
+- **Bulk Operations:** Perform actions like bulk delete directly from the Table
+  View.
 
-- I assumed that the application would be used at a team level, hence the ability to assign tasks to users. I also assumed that the application would be used by a small team, hence the lack of authentication.
+## Design Assumptions
 
-## Bonus features
+- The app targets **small teams** needing quick and collaborative task
+  management.
+- No authentication was included, assuming usage within trusted team
+  environments.
 
-- I added the Kanban board view as a bonus feature. I thought it would be a nice way to visualize tasks and their priorities.
+## Bonus Features
+
+- **Kanban Board:** Added to enhance task visualization and improve workflow
+  management.
+- **Inline Editing:** Quick edits without navigating away from the main views.
+
+## Conclusion
+
+Lisana focuses on simplicity and efficiency, making task management intuitive
+for teams. With versatile views, robust features, and thoughtful design, it
+delivers an optimal balance between functionality and user experience.
