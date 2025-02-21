@@ -4,10 +4,14 @@ import { mockTasks } from "../../data/mock-tasks";
 import { Button } from "@/components/ui/button";
 import { SquareKanban, Table } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useTaskStore } from "@/store/task-store";
+import { Toaster } from "sonner";
 
 export default function Home() {
+  const tasks = useTaskStore((state) => state.tasks);
   return (
     <div className="min-h-screen p-8">
+      <Toaster position="top-right" richColors />
       <header className="mb-8">
         <div className="flex justify-between items-center">
           <h1 className="text-primary-100 text-8xl font-black tracking-tight leading-none">
@@ -36,7 +40,7 @@ export default function Home() {
         </div>
       </header>
       <main>
-        <TableView tasks={[]} />
+        <TableView tasks={tasks} />
       </main>
     </div>
   );

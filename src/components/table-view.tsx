@@ -13,6 +13,8 @@ import { Checkbox } from "./ui/checkbox";
 import { Input } from "./ui/input";
 import { useState } from "react";
 import { TaskModal } from "./task-modal";
+import { toast } from "sonner";
+import { useTaskStore } from "@/store/task-store";
 
 interface TableViewProps {
     tasks: Task[];
@@ -22,10 +24,19 @@ export default function TableView({ tasks }: TableViewProps) {
     const [selectedTasks, setSelectedTasks] = useState<number[]>([]);
     const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const deleteTask = useTaskStore((state) => state.deleteTask);
 
     const handleTitleEdit = (id: number, title: string) => {
         console.log(`Editing task ${id} with title ${title}`);
     };
+
+    const deleteTasks = () => {
+        selectedTasks.forEach((id) => deleteTask(id));
+        setSelectedTasks([]);
+        const taskCount = selectedTasks.length;
+        toast.success(`${taskCount} task${taskCount > 1 ? "s" : ""} deleted`);
+    };
+
     return (
         <div className="rounded-lg border bg-background-card">
             <div className="p-4 flex justify-between items-center border-b">
@@ -40,7 +51,8 @@ export default function TableView({ tasks }: TableViewProps) {
                     <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => alert("List view clicked")}
+                        onClick={() =>
+                            selectedTasks.length > 0 && deleteTasks()}
                     >
                         <Trash2 className="h-4 w-4" />
                     </Button>
@@ -71,6 +83,21 @@ export default function TableView({ tasks }: TableViewProps) {
                     <Table>
                         <TableHeader>
                             <TableRow className="hover:bg-transparent">
+                                <TableCell>
+                                    <Checkbox
+                                        checked={selectedTasks.length ===
+                                            tasks.length}
+                                        onCheckedChange={(checked) => {
+                                            setSelectedTasks(
+                                                checked
+                                                    ? tasks.map((task) =>
+                                                        task.id
+                                                    )
+                                                    : [],
+                                            );
+                                        }}
+                                    />
+                                </TableCell>
                                 <TableHead>Task Name</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Priority</TableHead>
@@ -144,8 +171,7 @@ export default function TableView({ tasks }: TableViewProps) {
                     setIsModalOpen(false);
                     setEditingTask(undefined);
                 }}
-                onSave={(task) => {
-                    console.log("Task saved", task);
+                onSave={() => {
                     setIsModalOpen(false);
                     setEditingTask(undefined);
                 }}

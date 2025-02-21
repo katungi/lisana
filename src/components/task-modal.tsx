@@ -40,6 +40,8 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import type { Priority, Status, Task, User } from "@/lib/types";
 import { getAvatarStyle, users } from "@/lib/users";
 import { cn } from "@/lib/utils";
+import { useTaskStore } from "@/store/task-store";
+import { toast } from "sonner";
 
 const taskSchema = z.object({
     title: z.string().min(1, { message: "Title is required" }),
@@ -83,6 +85,8 @@ export function TaskModal({
     onRemoveCustomField,
 }: TaskModalProps) {
     const [open, setOpen] = useState(false);
+    const addTask = useTaskStore((state) => state.addTask);
+    const updateTask = useTaskStore((state) => state.updateTask);
 
     const form = useForm<TaskFormValues>({
         resolver: zodResolver(taskSchema),
@@ -119,14 +123,27 @@ export function TaskModal({
     }, [task, form]);
 
     const onSubmit = (values: TaskFormValues) => {
-        onSave({
+        const taskData = {
+            id: task?.id || Date.now(), // Generate a new ID if it's a new task
             title: values.title,
             status: values.status,
             priority: values.priority,
             description: values.description,
             assignees: values.assignees as any,
             customFields: values.customFields,
-        });
+            createdAt: task?.createdAt || new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+        };
+
+        if (task) {
+            updateTask(taskData);
+            toast.success("Task updated successfully");
+        } else {
+            addTask(taskData);
+            toast.success("Task created successfully");
+        }
+
+        onSave(taskData);
         onClose();
     };
 
