@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lisana
 
-## Getting Started
+## Description
 
-First, run the development server:
+Lisana is a simple task manager that allows you to create, edit, and delete
+tasks.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Submission by: Daniel Denis
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Accessing the app
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The app is hosted on Vercel and can be accessed
+[here](https://lisana.vercel.app/). The code is hosted on GitHub and can be
+accessed [here](https://github.com/katungi/lisana).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Tools used
 
-## Learn More
+- React and Next.js
+- TypeScript
+- ShadCn (for the headless components)
+- TailwindCSS
+- Zustand (for state management)
+- React-Beautiful-DnD (for drag and drop)
+- Zod - for validation
+- React-hook-form - for form handling
 
-To learn more about Next.js, take a look at the following resources:
+## Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Basic Crud operations for tasks (Create, Read, Update, Delete)
+- Users can switch between Table view and Kanban board. When in Kanban board
+  view, users can drag and drop tasks between columns of priorities ('urgent', 'high', 'medium', 'low', 'none')
+- Users can filter tasks by priority, and search for tasks by title on both modes
+- Users can perform bulk operations like delete in Table View mode
+- Users can edit tasks in a modal, and can also edit titles in line in both kanban and table mode. 
+- Users can assign users to tasks when creating/editing them, and in both can filter tasks by user/assignee
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Assumptions
 
-## Deploy on Vercel
+- I assumed that the application would be used at a team level, hence the ability to assign tasks to users. I also assumed that the application would be used by a small team, hence the lack of authentication.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Bonus features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- I added the Kanban board view as a bonus feature. I thought it would be a nice way to visualize tasks and their priorities.

@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { Task } from '@/lib/types';
+import type { Priority, Task } from '@/lib/types';
 import { users } from '@/lib/users';
 import { useTaskStore } from '@/store/task-store';
 import {
@@ -25,34 +25,46 @@ import {
   Droppable,
 } from '@hello-pangea/dnd';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CircleX, FilterIcon, Plus, Search, Users, X } from 'lucide-react';
+import { CircleX, FilterIcon, Plus, Search, Trash2, Users, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { KanbanCard } from './kanban-card';
 import { TaskModal } from './task-modal';
 
-type Column = {
-  id: Task['status'];
-  title: string;
+const PRIORITY_TITLES: Record<Priority, string> = {
+  'none': 'No Priority',
+  'low': 'Low Priority',
+  'medium': 'Medium Priority',
+  'high': 'High Priority',
+  'urgent': 'Urgent'
+};
+
+const PRIORITY_COLORS: Record<Priority, string> = {
+  'none': 'bg-gray-500 text-gray-600',
+  'low': 'bg-blue-500 text-blue-600',
+  'medium': 'bg-yellow-500 text-yellow-600',
+  'high': 'bg-orange-500 text-orange-600',
+  'urgent': 'bg-red-500 text-red-600',
 };
 
 export function KanbanView() {
-  const { tasks, addTask, updateTask } = useTaskStore();
-  const [columns] = useState<Column[]>([
-    { id: 'not_started', title: 'Not Started' },
-    { id: 'in_progress', title: 'In Progress' },
-    { id: 'completed', title: 'Completed' },
-  ]);
+  const { tasks, addTask, updateTask, deleteTask } = useTaskStore();
+
+  // Define columns
+  const priorities: Priority[] = ['urgent', 'high', 'medium', 'low', 'none'];
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedColumn, setSelectedColumn] = useState<Column | null>(null);
+  const [selectedPriority, setSelectedPriority] = useState<Priority | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'priority' | 'title' | 'created'>(
-    'created'
-  );
+  const [sortBy, setSortBy] = useState<'status' | 'title' | 'created'>('created');
   const [activeUserFilters, setActiveUserFilters] = useState<string[]>([]);
 
+  // Selection state for bulk operations
+  const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([]);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+
   const handleAddTask = (newTask: Omit<Task, 'id'>) => {
-    const task = { ...newTask, id: Date.now() }; // Generate a unique ID
+    const task = { ...newTask, id: Date.now() };
     addTask(task);
   };
 
@@ -61,6 +73,12 @@ export function KanbanView() {
   };
 
   const handleDragEnd = (result: DropResult) => {
+    // Exit selection mode when dragging
+    if (isSelectionMode) {
+      setIsSelectionMode(false);
+      setSelectedTaskIds([]);
+    }
+
     const { destination, source, draggableId } = result;
 
     if (!destination) return;
@@ -77,9 +95,15 @@ export function KanbanView() {
 
     if (!taskToMove) return;
 
+    // Update the task's priority based on the destination column
+    const newPriority = destination.droppableId as Priority;
+
+    // Ensure the priority is valid
+    if (!priorities.includes(newPriority)) return;
+
     const updatedTask = {
       ...taskToMove,
-      status: destination.droppableId as Task['status'],
+      priority: newPriority,
     };
 
     updateTask(updatedTask);
@@ -100,11 +124,10 @@ export function KanbanView() {
       })
       .sort((a, b) => {
         switch (sortBy) {
-          case 'priority':
-            return (
-              ['high', 'medium', 'low', 'none'].indexOf(a.priority) -
-              ['high', 'medium', 'low', 'none'].indexOf(b.priority)
-            );
+          case 'status':
+            const statusOrder = { 'not_started': 0, 'in_progress': 1, 'completed': 2 };
+            return statusOrder[a.status as keyof typeof statusOrder] -
+              statusOrder[b.status as keyof typeof statusOrder];
           case 'title':
             return a.title.localeCompare(b.title);
           case 'created':
@@ -132,9 +155,84 @@ export function KanbanView() {
     setActiveUserFilters([]);
   };
 
+  // Handle task selection
+  const toggleTaskSelection = (taskId: number) => {
+    setSelectedTaskIds(prev =>
+      prev.includes(taskId)
+        ? prev.filter(id => id !== taskId)
+        : [...prev, taskId]
+    );
+  };
+
+  // Toggle selection mode
+  const toggleSelectionMode = () => {
+    if (isSelectionMode) {
+      // Exit selection mode
+      setIsSelectionMode(false);
+      setSelectedTaskIds([]);
+    } else {
+      // Enter selection mode
+      setIsSelectionMode(true);
+    }
+  };
+
+  const deleteTasks = (taskIds: number[]) => {
+    taskIds.forEach((id) => {
+      deleteTask(id);
+    });
+  }
+
+  // Handle bulk delete operation
+  const handleBulkDelete = () => {
+    if (selectedTaskIds.length === 0) return;
+    deleteTasks(selectedTaskIds);
+    setSelectedTaskIds([]);
+    setIsSelectionMode(false);
+  };
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between">
+        <div>
+          {isSelectionMode && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-purple-600 font-medium">
+                {selectedTaskIds.length} tasks selected
+              </span>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleBulkDelete}
+                disabled={selectedTaskIds.length === 0}
+                className="flex items-center gap-1"
+              >
+                <Trash2 size={16} />
+                Delete Selected
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsSelectionMode(false);
+                  setSelectedTaskIds([]);
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
+          {!isSelectionMode && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleSelectionMode}
+              className="flex items-center gap-1"
+            >
+              Select Tasks
+            </Button>
+          )}
+        </div>
+
         <div className="flex justify-end gap-4">
           {/* Clear Filters Button */}
           <AnimatePresence>
@@ -185,7 +283,7 @@ export function KanbanView() {
               <SelectValue placeholder="Sort by..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="priority">Priority</SelectItem>
+              <SelectItem value="status">Status</SelectItem>
               <SelectItem value="title">A-Z</SelectItem>
               <SelectItem value="created">Newest First</SelectItem>
             </SelectContent>
@@ -212,11 +310,10 @@ export function KanbanView() {
                     <Button
                       key={user.id}
                       variant="ghost"
-                      className={`justify-start gap-2 ${
-                        activeUserFilters.includes(user.id)
+                      className={`justify-start gap-2 ${activeUserFilters.includes(user.id)
                           ? 'bg-purple-100 text-purple-600'
                           : ''
-                      }`}
+                        }`}
                       onClick={() => toggleUserFilter(user.id)}
                     >
                       <Avatar className="h-8 w-8 border-2 border-background">
@@ -274,16 +371,17 @@ export function KanbanView() {
       </div>
 
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {columns.map((column) => (
-            <div key={column.id} className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-5">
+          {priorities.map((priority) => (
+            <div key={priority} className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-lg">{column.title}</h3>
+                  <div className={`rounded-full w-3 h-3 ${PRIORITY_COLORS[priority].split(' ')[0]}`}></div>
+                  <h3 className="font-semibold text-lg">{PRIORITY_TITLES[priority]}</h3>
                   <span className="text-muted-foreground text-sm">
                     {
                       filteredAndSortedTasks.filter(
-                        (task) => task.status === column.id
+                        (task) => task.priority === priority
                       ).length
                     }
                   </span>
@@ -293,7 +391,7 @@ export function KanbanView() {
                     variant="ghost"
                     size="icon"
                     onClick={() => {
-                      setSelectedColumn(column);
+                      setSelectedPriority(priority);
                       setIsModalOpen(true);
                     }}
                   >
@@ -301,23 +399,23 @@ export function KanbanView() {
                   </Button>
                 </div>
               </div>
-              <Droppable droppableId={column.id}>
+              <Droppable droppableId={priority}>
                 {(provided, snapshot) => (
                   <div
                     {...provided.droppableProps}
                     ref={provided.innerRef}
-                    className={`min-h-[500px] rounded-lg border bg-background p-4 transition-colors ${
-                      snapshot.isDraggingOver ? 'border-primary/50' : ''
-                    }`}
+                    className={`min-h-[500px] rounded-lg border bg-background p-4 transition-colors ${snapshot.isDraggingOver ? `border-${priority}-300` : ''
+                      }`}
                   >
                     <div>
                       {filteredAndSortedTasks
-                        .filter((task) => task.status === column.id)
+                        .filter((task) => task.priority === priority)
                         .map((task, index) => (
                           <Draggable
                             key={task.id}
                             draggableId={task.id.toString()}
                             index={index}
+                            isDragDisabled={isSelectionMode}
                           >
                             {(provided, snapshot) => (
                               <div
@@ -331,10 +429,34 @@ export function KanbanView() {
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  setSelectedTask(task);
+                                  if (isSelectionMode) {
+                                    toggleTaskSelection(task.id);
+                                  } else {
+                                    setSelectedTask(task);
+                                  }
                                 }}
+                                className={`relative ${isSelectionMode ? 'cursor-pointer' : ''
+                                  }`}
                               >
-                                <KanbanCard task={task} className="mb-3" />
+                                {isSelectionMode && (
+                                  <div className="absolute -left-2 top-4 z-10">
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedTaskIds.includes(task.id)}
+                                      onChange={() => toggleTaskSelection(task.id)}
+                                      className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                  </div>
+                                )}
+                                <KanbanCard
+                                  task={task}
+                                  className={`mb-3 ${selectedTaskIds.includes(task.id)
+                                      ? 'bg-purple-50 border-purple-200 shadow-sm'
+                                      : ''
+                                    }`}
+                                  isSelected={selectedTaskIds.includes(task.id)}
+                                />
                                 {snapshot.draggingOver && (
                                   <div className="mt-2 h-24 rounded-md bg-purple-100" />
                                 )}
@@ -355,7 +477,7 @@ export function KanbanView() {
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
-          setSelectedColumn(null);
+          setSelectedPriority(null);
         }}
         onSave={(newTask) => {
           if (selectedTask) {
@@ -363,19 +485,20 @@ export function KanbanView() {
           } else {
             handleAddTask({
               ...newTask,
+              priority: selectedPriority || 'none',
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
             });
           }
           setIsModalOpen(false);
-          setSelectedColumn(null);
+          setSelectedPriority(null);
           setSelectedTask(null);
         }}
         task={{
           id: new Date().getTime(),
           title: '',
-          priority: 'none',
-          status: selectedColumn?.id || 'not_started',
+          priority: selectedPriority || 'none',
+          status: 'not_started',
           assignees: [],
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),

@@ -9,7 +9,7 @@ import {
 import type { ActiveFilters, Priority, Status, Task, User } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CircleX, Search, Users } from 'lucide-react';
+import { CircleX, Search, Trash, Users } from 'lucide-react';
 import { useState } from 'react';
 
 interface TableFiltersProps {
@@ -23,6 +23,8 @@ interface TableFiltersProps {
   onStatusFilterChange: (statuses: Status[]) => void;
   onPriorityFilterChange: (priorities: Priority[]) => void;
   showClearFilters?: boolean;
+  bulkAction: boolean;
+  onBulkActionChange: () => void;
 }
 
 const TableFilters = ({
@@ -36,6 +38,8 @@ const TableFilters = ({
   onStatusFilterChange,
   onPriorityFilterChange,
   showClearFilters,
+  bulkAction,
+  onBulkActionChange,
 }: TableFiltersProps) => {
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
     search: searchValue,
@@ -126,6 +130,27 @@ const TableFilters = ({
         )}
       </AnimatePresence>
 
+
+      {bulkAction && (
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => onBulkActionChange()}
+              className='bg-red-600'
+            >
+              <Trash size={18} className='text-white' />
+            </Button>
+          </motion.div>
+        </AnimatePresence>
+      )}
+
       {/* Search input */}
       <div className="relative flex items-center">
         <Search className="absolute left-2 h-4 w-4 text-muted-foreground" />
@@ -146,7 +171,7 @@ const TableFilters = ({
               size="icon"
               className={cn(
                 activeFilters.users.length > 0 &&
-                  'bg-purple-100 text-purple-600'
+                'bg-purple-100 text-purple-600'
               )}
             >
               <Users className="h-4 w-4" />
@@ -161,7 +186,7 @@ const TableFilters = ({
                   className={cn(
                     'justify-start gap-2',
                     activeFilters.users.includes(user.id) &&
-                      'bg-purple-100 text-purple-600'
+                    'bg-purple-100 text-purple-600'
                   )}
                   onClick={() => toggleUserFilter(user.id)}
                 >

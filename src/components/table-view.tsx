@@ -13,9 +13,12 @@ import { AvatarFallback } from '@radix-ui/react-avatar';
 import { motion } from 'framer-motion';
 import {
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ChevronUp,
   Edit,
   Filter,
+  MoveRight,
   Plus,
   Trash2,
 } from 'lucide-react';
@@ -267,6 +270,14 @@ export default function TableView() {
           priorityFilter={priorityFilter}
           onPriorityFilterChange={setPriorityFilter}
           showClearFilters={showClearFilters()}
+          bulkAction={allSelected}
+          onBulkActionChange={() => {
+            setAllSelected(!allSelected);
+            console.log(selectedTasks)
+            selectedTasks.forEach((id) => {
+              deleteTask(id);
+            });
+          }}
         />
       </div>
       {tasks.length === 0 ? (
@@ -366,8 +377,8 @@ export default function TableView() {
                                   checked
                                     ? [...priorityFilter, priority]
                                     : priorityFilter.filter(
-                                        (p) => p !== priority
-                                      )
+                                      (p) => p !== priority
+                                    )
                                 );
                               }}
                               className="mr-2"
@@ -515,13 +526,13 @@ export default function TableView() {
           Showing {indexOfFirstTask + 1} to{' '}
           {Math.min(indexOfLastTask, tasks.length)} of {tasks.length} tasks
         </div>
-
-        <div className="gap-2">
+        <div className="flex gap-2">
           <Button
             variant="outline"
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
           >
+            <ChevronLeft className="h-4 w-4" />
             Previous
           </Button>
           <Button
@@ -530,6 +541,7 @@ export default function TableView() {
             disabled={indexOfLastTask >= tasks.length}
           >
             Next
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -545,8 +557,8 @@ export default function TableView() {
           setEditingTask(undefined);
         }}
         customFields={[]}
-        onAddCustomField={() => {}}
-        onRemoveCustomField={() => {}}
+        onAddCustomField={() => { }}
+        onRemoveCustomField={() => { }}
       />
     </div>
   );
