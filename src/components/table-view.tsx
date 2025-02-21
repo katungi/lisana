@@ -12,6 +12,7 @@ import { Edit, Filter, Settings, SortAsc, Trash2, Users } from "lucide-react";
 import { Checkbox } from "./ui/checkbox";
 import { Input } from "./ui/input";
 import { useState } from "react";
+import { TaskModal } from "./task-modal";
 
 interface TableViewProps {
     tasks: Task[];
@@ -31,6 +32,7 @@ export default function TableView({ tasks }: TableViewProps) {
                 <Button
                     variant="default"
                     className="gap-2"
+                    onClick={() => setIsModalOpen(true)}
                 >
                     + Add task
                 </Button>
@@ -135,6 +137,22 @@ export default function TableView({ tasks }: TableViewProps) {
                         </tbody>
                     </Table>
                 )}
+            <TaskModal
+                isOpen={isModalOpen}
+                task={editingTask}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setEditingTask(undefined);
+                }}
+                onSave={(task) => {
+                    console.log("Task saved", task);
+                    setIsModalOpen(false);
+                    setEditingTask(undefined);
+                }}
+                customFields={[]}
+                onAddCustomField={() => {}}
+                onRemoveCustomField={() => {}}
+            />
         </div>
     );
 }

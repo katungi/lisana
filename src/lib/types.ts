@@ -1,11 +1,11 @@
-type Status = "not_started" | "in_progress" | "completed";
-type Priority = "none" | "low" | "medium" | "high" | "urgent";
+export type Status = "not_started" | "in_progress" | "completed";
+export type Priority = "none" | "low" | "medium" | "high" | "urgent";
 
 export type Task = {
     id: number
     title: string
-    status: "not_started" | "in_progress" | "completed"
-    priority: "none" | "low" | "medium" | "high"
+    status: Status
+    priority: Priority
     assignees: User[]
     description?: string
     createdAt: string
