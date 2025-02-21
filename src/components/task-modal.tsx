@@ -94,7 +94,6 @@ export function TaskModal({
             title: task?.title || "",
             status: task?.status || "not_started",
             priority: task?.priority || "none",
-            description: task?.description || "",
             assignees: task?.assignees || [],
             customFields: task?.customFields || [],
         },
@@ -106,7 +105,6 @@ export function TaskModal({
                 title: task.title,
                 status: task.status,
                 priority: task.priority,
-                description: task.description || "",
                 assignees: task.assignees,
                 customFields: task.customFields,
             });
@@ -115,7 +113,6 @@ export function TaskModal({
                 title: "",
                 status: "not_started",
                 priority: "none",
-                description: "",
                 assignees: [],
                 customFields: [],
             });
@@ -128,7 +125,6 @@ export function TaskModal({
             title: values.title,
             status: values.status,
             priority: values.priority,
-            description: values.description,
             assignees: values.assignees as any,
             customFields: values.customFields,
             createdAt: task?.createdAt || new Date().toISOString(),
@@ -399,22 +395,6 @@ export function TaskModal({
                                 </Select>
                             </div>
                         </div>
-
-                        <div className="space-y-2">
-                            <label
-                                className="text-sm font-medium"
-                                htmlFor="description"
-                            >
-                                Description
-                            </label>
-                            <Textarea
-                                id="description"
-                                placeholder="Add a description..."
-                                rows={4}
-                                {...form.register("description")}
-                            />
-                        </div>
-
                         {customFields.map((field) => (
                             <div key={field.id} className="space-y-2">
                                 <label className="text-sm font-medium">
